@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز الوارث</title>
+  <!-- Firebase App (ضروري دائماً) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+
+<!-- Firebase Authentication (إذا تستخدم تسجيل دخول) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+<!-- Firebase Firestore (هذا المطلوب لحل المشكلة) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMaUgrTSs-fE9hglSWZUpm-z7x8mA6T-w",
+    authDomain: "warith-75545.firebaseapp.com",
+    projectId: "warith-75545",
+    storageBucket: "warith-75545.firebasestorage.app",
+    messagingSenderId: "393435095123",
+    appId: "1:393435095123:web:a42802d980f0e57525e6a6"
+  };
+
+  //تهيئة Firebase
+  firebase.initializeApp(firebaseConfig);
+
+   // التحقق من حالة تسجيل الدخول
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) {
+      // إذا ماكو مستخدم مسجل، يرجع لصفحة تسجيل الدخول
+      window.location.href = 'index.html';
+    }
+  });
+
+  </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1a6aa2;
+            --secondary: #0d4a6d;
+            --accent: #ffc107;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #e3f2fd;
+            --dark: #333;
+            --gray: #777;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--danger), var(--success));
+        }
+        
+        header h1 {
+            color: var(--primary);
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        header p {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .tabs-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            padding: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-radius: 12px;
+            background: var(--light);
+            border: 2px solid transparent;
+        }
+        
+        .tab:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .content {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section.hidden {
+    display: none !important;
+}
+        
+        .form-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 106, 162, 0.2);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-add {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+        
+        .btn-add:hover {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, var(--accent), #e0a800);
+            color: var(--dark);
+        }
+        
+        .btn-reset:hover {
+            background: linear-gradient(to right, #e0a800, var(--accent));
+        }
+        
+        .btn-export {
+            background: linear-gradient(to right, var(--success), #218838);
+        }
+        
+        .btn-export:hover {
+            background: linear-gradient(to right, #218838, var(--success));
+        }
+        
+        .records-section {
+            flex: 2;
+            min-width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .section-header h2 {
+            color: var(--primary);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .report-controls {
+            display: flex;
+            gap: 10px;
+            background: var(--light);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+        }
+        
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .date-filter input {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+            background: var(--light);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-container input {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            min-width: 250px;
+            font-size: 1rem;
+        }
+        
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f9ff;
+        }
+        
+        tr:hover {
+            background-color: var(--light);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .actions button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .edit-btn {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .actions button:hover {
+            opacity: 0.9;
+            transform: scale(1.1);
+        }
+        
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(to right, var(--accent), #e0a800);
+            color: var(--dark);
+            font-weight: bold;
+            padding: 18px 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+            font-size: 1.3rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .currency {
+            color: var(--danger);
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 1.1rem;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        .department-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .department-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .doctor-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .patient-list {
+            margin-top: 15px;
+        }
+        
+        .patient-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .patient-item:last-child {
+            border-bottom: none;
+        }
+        
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .report-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+        }
+        
+        .report-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .report-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .export-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .doctor-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            align-items: center;
+        }
+        
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .stat-value-large {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-change {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 992px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 0 45%;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .report-controls, .search-container {
+                width: 100%;
+            }
+            
+            .report-controls input, .search-container input {
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .total-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .date-filter {
+                flex-direction: column;
+            }
+            
+            .search-container input {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+
+#expensesForm {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 20px 25px;
+    margin: 25px auto;
+    max-width: 600px;
+    direction: rtl;
+    display: block; /* يتم التحكم بالعرض/الإخفاء بالجافا سكربت */
+}
+
+#expensesForm h3 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: right;
+}
+
+#expensesForm input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: "Segoe UI", sans-serif;
+    box-sizing: border-box;
+    direction: rtl;
+}
+
+#addExpenseBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #0069d9;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#addExpenseBtn:hover {
+    background-color: #0053b3;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-hospital-alt"></i>مركز الوارث</h1>
+    </header>
+
+    <div style="display: flex; justify-content: flex-end; padding: 15px;">
+    <button onclick="logout()" style="
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    ">
+        تسجيل الخروج <i class="fas fa-sign-out-alt"></i>
+    </button>
+</div>
+
+    <div class="container">
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="mri">
+                    <i class="fas fa-magnet"></i> قسم الرنين
+                </div>
+                <div class="tab" data-tab="xray-old">
+                    <i class="fas fa-x-ray"></i> قسم الأشعة القديمة
+                </div>
+                <div class="tab" data-tab="xray-new">
+                    <i class="fas fa-radiation"></i> قسم الأشعة الجديدة
+                </div>
+                <div class="tab" data-tab="reports">
+                    <i class="fas fa-chart-bar"></i> قسم التقارير
+                </div>
+                <div class="tab" data-tab="expenses">
+                    <i class="fas fa-receipt"></i> قسم المصاريف
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="form-section" id="formSection">
+                <div class="department-title">
+                    <div class="department-icon">
+                        <i class="fas fa-magnet"></i>
+                    </div>
+                    <h2>إضافة حالة جديدة</h2>
+                </div>
+                <form id="patientForm">
+                    <div class="form-group">
+                        <label for="patientName"><i class="fas fa-user"></i> اسم المريض</label>
+                        <input type="text" id="patientName" placeholder="أدخل اسم المريض كاملاً">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mobile"><i class="fas fa-mobile-alt"></i> رقم الموبايل</label>
+                        <input type="tel" id="mobile" placeholder="أدخل رقم الموبايل">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor"><i class="fas fa-user-md"></i> الطبيب المرسل</label>
+                        <input type="text" id="doctor" placeholder="أدخل اسم الطبيب">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="examType"><i class="fas fa-stethoscope"></i> نوع الفحص</label>
+                        <input type="text" id="examType" placeholder="أدخل نوع الفحص">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price"><i class="fas fa-money-bill-wave"></i> سعر الفحص (دينار عراقي)</label>
+                        <input type="number" id="price" min="0" placeholder="أدخل سعر الفحص">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date"><i class="fas fa-calendar-alt"></i> التاريخ</label>
+                        <input type="date" id="date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes"><i class="fas fa-notes-medical"></i> ملاحظات إضافية</label>
+                        <textarea id="notes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-add">
+                            <i class="fas fa-plus-circle"></i> إضافة الحالة
+                        </button>
+                        <button type="reset" class="btn btn-reset">
+                            <i class="fas fa-eraser"></i> تفريغ الحقول
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+<div id="expensesForm" class="form-section hidden">
+  <h3>إضافة مصروف</h3>
+  <input type="text" id="expenseName" placeholder="نوع المصروف">
+  <input type="number" id="expenseAmount" placeholder="المبلغ">
+  <input type="date" id="expenseDate">
+  <input type="text" id="expenseNotes" placeholder="ملاحظات (اختياري)">
+  <button id="addExpenseBtn">إضافة المصروف</button>
+</div>
+
+            <div class="records-section">
+                <div class="section-header">
+                    <h2 id="sectionTitle"><i class="fas fa-list"></i> سجلات المرضى</h2>
+                    <div id="searchSection" class="search-container">
+                        <input type="text" id="searchInput" placeholder="ابحث باسم المريض أو رقم الموبايل...">
+                        <button id="searchBtn" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="reportSection" class="report-controls" style="display: none;">
+                        <div class="search-container">
+                            <input type="text" id="doctorSearch" placeholder="ابحث باسم الطبيب...">
+                            <button id="doctorSearchBtn" class="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div class="date-filter">
+                            <label for="startDate">من:</label>
+                            <input type="date" id="startDate">
+                            <label for="endDate">إلى:</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <button id="filterBtn" class="btn">
+                            <i class="fas fa-filter"></i> تطبيق الفلتر
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container" id="recordsContainer">
+                    <table id="recordsTable">
+                        <thead>
+                            <tr>
+                                <th>اسم المريض</th>
+                                <th>رقم الموبايل</th>
+                                <th>الطبيب</th>
+                                <th>نوع الفحص</th>
+                                <th>السعر</th>
+                                <th>التاريخ</th>
+                                <th>ملاحظات</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody">
+                            <tr>
+                                <td colspan="8">
+                                    <div class="no-data">لا توجد سجلات في هذا القسم</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="doctor-stats" id="doctorStats" style="display: none;">
+                    <div class="stat-row">
+                        <div class="stat-info">
+                            <span class="stat-title">إجمالي عدد المرضى</span>
+                            <span class="stat-value-large" id="totalPatients">0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <div class="stat-info">
+                            <span class="stat-title">المجموع الكلي</span>
+                            <span class="stat-value-large"><span class="currency" id="totalAmount">0</span> د.ع</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <div class="stat-info">
+                            <span class="stat-title">متوسط سعر الفحص</span>
+                            <span class="stat-value-large"><span class="currency" id="avgPrice">0</span> د.ع</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row">
+                        <div class="stat-info">
+                            <span class="stat-title">آخر مريض تمت إضافته</span>
+                            <span id="lastPatient">-</span>
+                        </div>
+                        <div class="stat-change" id="lastPatientDate">-</div>
+                    </div>
+                </div>
+                
+                <div class="total-section" id="totalSection">
+                    <div>المجموع الكلي:</div>
+                    <div><span class="currency">0</span> دينار عراقي</div>
+                </div>
+                
+                <div class="export-section" id="exportSection" style="display: none;">
+                    <button id="exportBtn" class="btn btn-export">
+                        <i class="fas fa-file-excel"></i> تصدير إلى Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>تم تطوير البرنامج من قبل المهندس زيد 07728715245</p>
+    </footer>
+<script>
+    /* --------------  FIREBASE CONFIG  -------------- */
+const db = firebase.firestore();
+
+        function logout() {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "index.html";
+            }).catch((error) => {
+                alert("حدث خطأ أثناء تسجيل الخروج");
+            });
+        }
+ firebase.auth().onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+/* --------------  DEPARTMENTS CONST -------------- */
+const departments = {
+  mri:       { name: 'قسم الرنين',       icon: 'fa-magnet',   examType: 'رنين مغناطيسي' },
+  'xray-old':{ name: 'قسم الأشعة القديمة', icon: 'fa-x-ray', examType: 'أشعة قديمة' },
+  'xray-new':{ name: 'قسم الأشعة الجديدة', icon: 'fa-radiation', examType: 'أشعة حديثة' },
+  reports:   { name: 'قسم التقارير',       icon: 'fa-chart-bar' },
+  expenses:  { name: 'قسم المصاريف',       icon: 'fa-receipt' }
+};
+
+/* --------------  GLOBAL STATE -------------- */
+let currentDepartment = 'mri';
+let records = { mri: [], 'xray-old': [], 'xray-new': [] };
+let expenses = [];
+
+/* --------------  DOM SHORTCUTS -------------- */
+const tabs               = document.querySelectorAll('.tab');
+const form               = document.getElementById('patientForm');
+const expensesForm       = document.getElementById('expensesForm');
+const formSection        = document.getElementById('formSection');
+const recordsContainer   = document.getElementById('recordsContainer');
+const sectionTitle       = document.getElementById('sectionTitle');
+const searchSection      = document.getElementById('searchSection');
+const reportSection      = document.getElementById('reportSection');
+const exportSection      = document.getElementById('exportSection');
+const totalSection       = document.getElementById('totalSection');
+const doctorStats        = document.getElementById('doctorStats');
+
+/* --------------  HELPERS -------------- */
+const today     = new Date().toISOString().split('T')[0];
+const oneMonthAgo = new Date(); oneMonthAgo.setMonth(oneMonthAgo.getMonth()-1);
+document.getElementById('date').value = today;
+document.getElementById('startDate').value = oneMonthAgo.toISOString().split('T')[0];
+document.getElementById('endDate').value   = today;
+
+/* --------------  TAB SWITCHING -------------- */
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentDepartment = tab.dataset.tab;
+  updateDepartmentUI();
+}));
+
+function updateDepartmentUI() {
+  if (currentDepartment === 'reports') {
+    formSection.classList.add('hidden');
+    expensesForm.classList.add('hidden');
+    searchSection.style.display = 'none';
+    reportSection.style.display = 'flex';
+    exportSection.style.display = 'flex';
+    totalSection.style.display = 'none';
+    doctorStats.style.display = 'flex';
+    sectionTitle.innerHTML = `<i class="fas fa-chart-bar"></i> ${departments.reports.name}`;
+    displayReports();
+  } else if (currentDepartment === 'expenses') {
+    formSection.classList.add('hidden');
+    expensesForm.classList.remove('hidden');
+    searchSection.style.display = 'none';
+    reportSection.style.display = 'none';
+    exportSection.style.display = 'none';
+    totalSection.style.display = 'flex';
+    doctorStats.style.display = 'none';
+    sectionTitle.innerHTML = `<i class="fas fa-receipt"></i> ${departments.expenses.name}`;
+    renderExpensesTable();
+    fetchExpenses();
+  } else {
+    formSection.classList.remove('hidden');
+    expensesForm.classList.add('hidden');
+    searchSection.style.display = 'flex';
+    reportSection.style.display = 'none';
+    exportSection.style.display = 'none';
+    totalSection.style.display = 'flex';
+    doctorStats.style.display = 'none';
+    sectionTitle.innerHTML = `<i class="fas fa-list"></i> ${departments[currentDepartment].name}`;
+    renderPatientTable();
+    fetchRecords();
+  }
+}
+
+/* --------------  FIREBASE FETCH -------------- */
+function fetchRecords() {
+  db.collection(currentDepartment).orderBy('date','desc')
+    .onSnapshot(snap => {
+      records[currentDepartment] = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      displayRecords();
+    });
+}
+function fetchExpenses() {
+  db.collection('expenses').orderBy('date','desc')
+    .onSnapshot(snap => {
+      expenses = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      displayExpenses();
+    });
+}
+
+/* --------------  RENDER TABLES -------------- */
+function renderPatientTable() {
+  recordsContainer.innerHTML = `
+    <table id="recordsTable">
+      <thead>
+        <tr>
+          <th>اسم المريض</th><th>رقم الموبايل</th><th>الطبيب</th><th>نوع الفحص</th><th>السعر</th>
+          <th>التاريخ</th><th>ملاحظات</th><th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody id="recordsBody"></tbody>
+    </table>`;
+}
+function renderExpensesTable() {
+  recordsContainer.innerHTML = `
+    <table id="expensesTable">
+      <thead>
+        <tr>
+          <th>اسم المصروف</th><th>المبلغ</th><th>التاريخ</th><th>ملاحظات</th><th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody id="expensesBody"></tbody>
+    </table>`;
+}
+
+/* --------------  DISPLAY (LOCAL) -------------- */
+function displayRecords(filtered = null) {
+  const data = filtered || records[currentDepartment];
+  const tbody = document.getElementById('recordsBody');
+  if (!data.length) { tbody.innerHTML='<tr><td colspan="8"><div class="no-data">لا توجد سجلات</div></td></tr>'; return; }
+
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td>${r.name}</td><td>${r.mobile}</td><td>${r.doctor}</td><td>${r.exam}</td>
+      <td><span class="currency">${(+r.price).toLocaleString('ar-IQ')}</span> د.ع</td>
+      <td>${r.date}</td><td>${r.notes||'-'}</td>
+      <td class="actions">
+        <button class="edit-btn" data-id="${r.id}"><i class="fas fa-edit"></i></button>
+        <button class="delete-btn" data-id="${r.id}"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+
+  tbody.querySelectorAll('.edit-btn').forEach(b=>b.onclick=()=>editRecord(b.dataset.id));
+  tbody.querySelectorAll('.delete-btn').forEach(b=>b.onclick=()=>deleteRecord(b.dataset.id));
+  updateTotal();
+}
+
+function displayExpenses() {
+  const tbody = document.getElementById('expensesBody');
+  if (!expenses.length) { tbody.innerHTML='<tr><td colspan="5"><div class="no-data">لا توجد مصاريف</div></td></tr>'; return; }
+  tbody.innerHTML = expenses.map(e => `
+    <tr>
+      <td>${e.name}</td>
+      <td><span class="currency">${(+e.amount).toLocaleString('ar-IQ')}</span> د.ع</td>
+      <td>${e.date}</td><td>${e.notes||'-'}</td>
+      <td><button class="delete-expense" data-id="${e.id}"><i class="fas fa-trash"></i></button></td>
+    </tr>`).join('');
+  tbody.querySelectorAll('.delete-expense').forEach(b=>b.onclick=()=>deleteExpense(b.dataset.id));
+  updateTotal();
+}
+
+/* --------------  CRUD ACTIONS -------------- */
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const data = {
+    name:   document.getElementById('patientName').value.trim(),
+    mobile: document.getElementById('mobile').value.trim(),
+    doctor: document.getElementById('doctor').value.trim(),
+    exam:   document.getElementById('examType').value.trim(),
+    price: +document.getElementById('price').value,
+    date:   document.getElementById('date').value,
+    notes:  document.getElementById('notes').value.trim()
+  };
+  if (!data.name || !data.mobile || !data.doctor || !data.exam || !data.date) {
+    alert('يرجى ملء الحقول المطلوبة'); return;
+  }
+  db.collection(currentDepartment).add(data).then(()=>{
+    form.reset(); document.getElementById('date').value = today;
+    document.getElementById('examType').value = departments[currentDepartment].examType;
+    alert('تمت الإضافة بنجاح');
+  });
+});
+
+document.getElementById('addExpenseBtn').addEventListener('click', ()=>{
+  const data = {
+    name:  document.getElementById('expenseName').value.trim(),
+    amount:+document.getElementById('expenseAmount').value,
+    date:  document.getElementById('expenseDate').value,
+    notes: document.getElementById('expenseNotes').value.trim()
+  };
+  if (!data.name || !data.amount || !data.date){ alert('أكمل الحقول'); return; }
+  db.collection('expenses').add(data).then(()=>{
+    ['expenseName','expenseAmount','expenseDate','expenseNotes']
+      .forEach(id=>document.getElementById(id).value='');
+  });
+});
+
+function editRecord(id){
+  const doc = records[currentDepartment].find(r=>r.id===id);
+  if(!doc) return;
+  ['patientName','mobile','doctor','examType','price','date','notes']
+    .forEach(k=>document.getElementById(k).value = doc[k]);
+  deleteRecord(id,false);
+}
+function deleteRecord(id,ask=true){
+  if(ask && !confirm('هل أنت متأكد من الحذف؟')) return;
+  db.collection(currentDepartment).doc(id).delete();
+}
+function deleteExpense(id){
+  if(!confirm('هل أنت متأكد من الحذف؟')) return;
+  db.collection('expenses').doc(id).delete();
+}
+
+/* --------------  SEARCH -------------- */
+document.getElementById('searchBtn').addEventListener('click', ()=> {
+  const term = document.getElementById('searchInput').value.toLowerCase();
+  if(!term){ displayRecords(); return; }
+  const filtered = records[currentDepartment].filter(r =>
+    r.name.includes(term) || r.mobile.includes(term) ||
+    r.doctor.includes(term) || r.exam.includes(term));
+  displayRecords(filtered);
+});
+document.getElementById('searchInput').addEventListener('keyup', ()=> {
+  if(!document.getElementById('searchInput').value) displayRecords();
+});
+
+/* --------------  REPORTS & EXPORT -------------- */
+function displayReports(){
+  Promise.all([
+    db.collection('mri').get(),
+    db.collection('xray-old').get(),
+    db.collection('xray-new').get()
+  ]).then(([mriSnap,xoSnap,xnSnap])=>{
+    let all = [
+      ...mriSnap.docs.map(d=>({...d.data(), id:d.id, dept:'الرنين'})),
+      ...xoSnap.docs.map(d=>({...d.data(), id:d.id, dept:'الأشعة القديمة'})),
+      ...xnSnap.docs.map(d=>({...d.data(), id:d.id, dept:'الأشعة الجديدة'}))
+    ];
+    const start=new Date(document.getElementById('startDate').value);
+    const end=new Date(document.getElementById('endDate').value); end.setDate(end.getDate()+1);
+    const doctorTerm=document.getElementById('doctorSearch').value.toLowerCase().trim();
+    all=all.filter(r=>{
+      const d=new Date(r.date);
+      return d>=start && d<end && (!doctorTerm || r.doctor.toLowerCase().includes(doctorTerm));
+    });
+    buildReportTable(all);
+  });
+}
+
+function buildReportTable(records){
+  const doctors={};
+  records.forEach(r=>{
+    if(!doctors[r.doctor]) doctors[r.doctor]={count:0,total:0,patients:[],byDept:{}};
+    const d=doctors[r.doctor];
+    d.count++; d.total+=r.price; d.patients.push(r);
+    if(!d.byDept[r.dept]) d.byDept[r.dept]={count:0,total:0};
+    d.byDept[r.dept].count++; d.byDept[r.dept].total+=r.price;
+  });
+  let html=`<table class="report-table"><thead>
+    <tr><th>الطبيب</th><th>عدد المرضى</th><th>المجموع</th><th>متوسط</th><th>أول تاريخ</th><th>آخر تاريخ</th></tr>
+  </thead><tbody>`;
+  for(const doc in doctors){
+    const d=doctors[doc];
+    const avg=Math.round(d.total/d.count);
+    const dates=d.patients.map(p=>new Date(p.date));
+    const min=new Date(Math.min(...dates)).toLocaleDateString('ar-IQ');
+    const max=new Date(Math.max(...dates)).toLocaleDateString('ar-IQ');
+    html+=`<tr>
+      <td>${doc}</td><td>${d.count}</td>
+      <td>${d.total.toLocaleString('ar-IQ')}</td><td>${avg.toLocaleString('ar-IQ')}</td>
+      <td>${min}</td><td>${max}</td>
+    </tr><tr><td colspan="6"><ul style="text-align:right;list-style:none">
+      ${Object.entries(d.byDept).map(([dept,val])=>`<li>${dept}: ${val.count} مريض - ${val.total.toLocaleString('ar-IQ')} د.ع</li>`).join('')}
+    </ul></td></tr>`;
+  }
+  html+='</tbody></table>';
+  recordsContainer.innerHTML=html;
+  updateDoctorStats(doctors);
+}
+
+function updateDoctorStats(docs){
+  let totalPatients=0,totalAmount=0,lastPatient='',lastDate='';
+  for(const doc in docs){
+    const d=docs[doc];
+    totalPatients+=d.count; totalAmount+=d.total;
+    const last=d.patients.reduce((a,b)=>new Date(a.date)>new Date(b.date)?a:b);
+    if(!lastDate || new Date(last.date)>new Date(lastDate)){
+      lastPatient=last.name; lastDate=last.date;
+    }
+  }
+  document.getElementById('totalPatients').textContent = totalPatients;
+  document.getElementById('totalAmount').textContent   = totalAmount.toLocaleString('ar-IQ');
+  document.getElementById('avgPrice').textContent      = totalPatients?Math.round(totalAmount/totalPatients).toLocaleString('ar-IQ'):'0';
+  document.getElementById('lastPatient').textContent   = lastPatient||'-';
+  document.getElementById('lastPatientDate').textContent = lastDate?new Date(lastDate).toLocaleDateString('ar-IQ'):'-';
+}
+
+/* --------------  TOTALS -------------- */
+function updateTotal(){
+  if(currentDepartment==='reports'){ totalSection.style.display='none'; return; }
+  Promise.all([
+    db.collection('mri').get(),
+    db.collection('xray-old').get(),
+    db.collection('xray-new').get(),
+    db.collection('expenses').get()
+  ]).then(([mri,xo,xn,exp])=>{
+    let examsTotal=0;
+    [mri,xo,xn].forEach(snap=>snap.forEach(d=>examsTotal+=d.data().price||0));
+    const expTotal=exp.docs.reduce((s,d)=>s+(d.data().amount||0),0);
+    const net=examsTotal-expTotal;
+    totalSection.innerHTML=`
+      <div style="text-align:right">
+        <div><strong>إجمالي الفحوصات:</strong> ${examsTotal.toLocaleString('ar-IQ')} د.ع</div>
+        <div><strong>المصاريف:</strong> ${expTotal.toLocaleString('ar-IQ')} د.ع</div>
+        <div><strong>الربح الصافي:</strong> ${net.toLocaleString('ar-IQ')} د.ع</div>
+      </div>`;
+  });
+}
+
+/* --------------  EXPORT -------------- */
+document.getElementById('exportBtn').addEventListener('click',()=>{
+  Promise.all([
+    db.collection('mri').get(),
+    db.collection('xray-old').get(),
+    db.collection('xray-new').get()
+  ]).then(([mri,xo,xn])=>{
+    let all=[
+      ...mri.docs.map(d=>({...d.data(), id:d.id, dept:'الرنين'})),
+      ...xo.docs.map(d=>({...d.data(), id:d.id, dept:'الأشعة القديمة'})),
+      ...xn.docs.map(d=>({...d.data(), id:d.id, dept:'الأشعة الجديدة'}))
+    ];
+    const start=new Date(document.getElementById('startDate').value);
+    const end=new Date(document.getElementById('endDate').value); end.setDate(end.getDate()+1);
+    all=all.filter(r=>{const d=new Date(r.date);return d>=start && d<end;});
+    if(!all.length){alert('لا توجد بيانات');return;}
+    // build excel
+    const rows=[['الطبيب','عدد المرضى','المجموع','متوسط السعر','أول تاريخ','آخر تاريخ']];
+    const docs={};
+    all.forEach(r=>{
+      if(!docs[r.doctor]) docs[r.doctor]={count:0,total:0,patients:[]};
+      docs[r.doctor].count++; docs[r.doctor].total+=r.price; docs[r.doctor].patients.push(r);
+    });
+    for(const d in docs){
+      const data=docs[d];
+      const avg=Math.round(data.total/data.count);
+      const dates=data.patients.map(p=>new Date(p.date));
+      rows.push([d,data.count,data.total,avg,new Date(Math.min(...dates)).toLocaleDateString('ar-IQ'),new Date(Math.max(...dates)).toLocaleDateString('ar-IQ')]);
+    }
+    rows.push([],['تفاصيل المرضى'],['الاسم','الموبايل','الطبيب','النوع','السعر','التاريخ','الملاحظات','القسم']);
+    all.forEach(r=>rows.push([r.name,r.mobile,r.doctor,r.exam,r.price,r.date,r.notes||'-',r.dept]));
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'التقرير');
+    XLSX.writeFile(wb,`تقرير_${new Date().toISOString().slice(0,10)}.xlsx`);
+  });
+});
+
+/* --------------  INIT -------------- */
+updateDepartmentUI();
+</script>
+</body>
+</html>

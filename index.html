@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - مركز الوارث الطبي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a6aa2 0%, #0d4a6d 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+        
+        .login-header {
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #1a6aa2;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #777;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #1a6aa2;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            border-color: #1a6aa2;
+            outline: none;
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(to right, #1a6aa2, #0d4a6d);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .forgot-password {
+            display: block;
+            margin-top: 15px;
+            color: #777;
+            text-decoration: none;
+        }
+        
+        .forgot-password:hover {
+            color: #1a6aa2;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="fas fa-hospital-alt"></i> مركز الوارث الطبي</h1>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> اسم المستخدم</label>
+                <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
+                <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                اسم المستخدم أو كلمة المرور غير صحيحة
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </button>
+            
+            <a href="#" class="forgot-password">نسيت كلمة المرور؟</a>
+        </form>
+    </div>
+
+    <script>
+       const firebaseConfig = {
+    apiKey: "AIzaSyDMaUgrTSs-fE9hglSWZUpm-z7x8mA6T-w",
+    authDomain: "warith-75545.firebaseapp.com",
+    projectId: "warith-75545",
+    storageBucket: "warith-75545.firebasestorage.app",
+    messagingSenderId: "393435095123",
+    appId: "1:393435095123:web:a42802d980f0e57525e6a6"
+  };
+
+  // تشغيل Firebase
+  firebase.initializeApp(firebaseConfig);
+
+   document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      firebase.auth().signInWithEmailAndPassword(username, password)
+          .then((userCredential) => {
+              // تم تسجيل الدخول بنجاح
+              window.location.href = "home.html";
+          })
+          .catch((error) => {
+              // فشل تسجيل الدخول
+              document.getElementById('errorMessage').style.display = 'block';
+          });
+  });
+    </script>
+</body>
+</html>
